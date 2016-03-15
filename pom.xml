@@ -27,8 +27,19 @@
 		<developerConnection>scm:git:git@github.com:stevensimmons/ddt-utils.git</developerConnection>
 		<url>https://github.com/stevensimmons/ddt-utils</url>
 	</scm>
+	<properties>
+		<java.compiler.source.version>1.8</java.compiler.source.version>
+		<java.compiler.target.version>1.8</java.compiler.target.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<commons-lang3.version>3.4</commons-lang3.version>
+	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>${commons-lang3.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
