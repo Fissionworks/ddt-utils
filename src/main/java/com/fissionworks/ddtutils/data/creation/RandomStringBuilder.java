@@ -26,7 +26,7 @@ public class RandomStringBuilder {
 
 	public RandomStringBuilder length(final int minLength, final int maxLength) {
 		Validate.isTrue(maxLength >= minLength, "Maxlength must be >= minlength");
-		Validate.isTrue((minLength >= 0) && (maxLength > 0), "minLength must be >= 0 and maxLength must be > 0");
+		Validate.isTrue(minLength >= 0 && maxLength > 0, "minLength must be >= 0 and maxLength must be > 0");
 		Validate.isTrue(!lengthSet,
 				"length(int desiredLength) and/or length(int min,int max) can only be specified once");
 		length = minLength + (int) (Math.random() * ((maxLength - minLength) + 1));
