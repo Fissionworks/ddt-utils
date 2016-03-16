@@ -1,6 +1,6 @@
 language: java
 script: mvn test
 after_success:
-  - mvn clean test jacoco:report coveralls:report
+  - bash <(curl -s https://codecov.io/bash)
 jdk:
   - oraclejdk8
