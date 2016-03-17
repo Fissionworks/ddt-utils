@@ -7,6 +7,14 @@ import org.testng.annotations.Test;
 public class RandomStringBuilderTest {
 
 	@Test
+	public void build_withAlphabeticSet_shouldCreateDefaultLengthAlphabeticString() {
+		final String actualString = new RandomStringBuilder().alphabetic().build();
+		System.out.println(actualString);
+		Assert.assertTrue(StringUtils.isAlpha(actualString), actualString);
+		Assert.assertEquals(actualString.length(), RandomStringBuilder.DEAFULT_LENGTH);
+	}
+
+	@Test
 	public void build_withLengthSet_shouldCreateAlphanumericStringOfGivenLength() {
 		final int expectedLength = 42;
 		final String actualString = new RandomStringBuilder().length(expectedLength).build();
@@ -16,9 +24,9 @@ public class RandomStringBuilderTest {
 
 	@Test
 	public void build_withMinLengthZeroAndNonZeroMaxLength_shouldGenerateAlphanumericStringInRange() {
-		// Generate and test multiple strings to increase probability that all length possibilities created/tested
 		final int minLength = 0;
 		final int maxLength = 4;
+		// Generate and test multiple strings to increase probability that all length possibilities created/tested
 		for (int i = 0; i < 20; i++) {
 			final String actualString = new RandomStringBuilder().length(minLength, maxLength).build();
 			Assert.assertTrue(StringUtils.isAlphanumeric(actualString) || StringUtils.isEmpty(actualString));
@@ -32,6 +40,26 @@ public class RandomStringBuilderTest {
 		final String actualString = new RandomStringBuilder().build();
 		Assert.assertTrue(StringUtils.isAlphanumeric(actualString));
 		Assert.assertEquals(actualString.length(), RandomStringBuilder.DEAFULT_LENGTH);
+	}
+
+	@Test(expectedExceptions = IllegalArgumentException.class)
+	public void length_withExactLengthAfterLengthRangeCall_shouldThrowException() {
+		new RandomStringBuilder().length(1, 5).length(2);
+	}
+
+	@Test(expectedExceptions = IllegalArgumentException.class)
+	public void length_withExactLengthMultipleCalls_shouldThrowException() {
+		new RandomStringBuilder().length(1).length(2);
+	}
+
+	@Test(expectedExceptions = IllegalArgumentException.class)
+	public void length_withLengthRangeAfterExactLengthCall_shouldThrowException() {
+		new RandomStringBuilder().length(1).length(2, 100);
+	}
+
+	@Test(expectedExceptions = IllegalArgumentException.class)
+	public void length_withLengthRangeMultipleCalls_shouldThrowException() {
+		new RandomStringBuilder().length(1, 5).length(5, 10);
 	}
 
 	@Test(expectedExceptions = IllegalArgumentException.class)
