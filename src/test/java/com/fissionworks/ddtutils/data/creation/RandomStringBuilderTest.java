@@ -9,7 +9,6 @@ public class RandomStringBuilderTest {
 	@Test
 	public void build_withAlphabeticSet_shouldCreateDefaultLengthAlphabeticString() {
 		final String actualString = new RandomStringBuilder().alphabetic().build();
-		System.out.println(actualString);
 		Assert.assertTrue(StringUtils.isAlpha(actualString), actualString);
 		Assert.assertEquals(actualString.length(), RandomStringBuilder.DEAFULT_LENGTH);
 	}
@@ -39,6 +38,13 @@ public class RandomStringBuilderTest {
 	public void build_withNoParametersSet_shouldCreateDefaultLengthAlphanumericString() {
 		final String actualString = new RandomStringBuilder().build();
 		Assert.assertTrue(StringUtils.isAlphanumeric(actualString));
+		Assert.assertEquals(actualString.length(), RandomStringBuilder.DEAFULT_LENGTH);
+	}
+
+	@Test
+	public void build_withNumericSet_shouldCreateDefaultLengthNumericString() {
+		final String actualString = new RandomStringBuilder().numeric().build();
+		Assert.assertTrue(StringUtils.isNumeric(actualString), actualString);
 		Assert.assertEquals(actualString.length(), RandomStringBuilder.DEAFULT_LENGTH);
 	}
 

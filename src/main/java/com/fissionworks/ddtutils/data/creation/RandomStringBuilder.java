@@ -25,6 +25,8 @@ public final class RandomStringBuilder {
 
 	private boolean lengthSet = false;
 
+	private boolean numeric = false;
+
 	/**
 	 * Sets the {@link RandomStringBuilder} to include alphabetic characters in the string that {@link #build()}
 	 * returns.
@@ -35,7 +37,6 @@ public final class RandomStringBuilder {
 	public RandomStringBuilder alphabetic() {
 		alphabetic = true;
 		return this;
-
 	}
 
 	/**
@@ -46,13 +47,11 @@ public final class RandomStringBuilder {
 	 * @since 1.0.0
 	 */
 	public String build() {
-		String randomString;
-		if (alphabetic) {
-			randomString = RandomStringUtils.randomAlphabetic(length);
-		} else {
-			randomString = RandomStringUtils.randomAlphanumeric(length);
+		if (!alphabetic && !numeric) {
+			alphabetic = true;
+			numeric = true;
 		}
-		return randomString;
+		return RandomStringUtils.random(length, alphabetic, numeric);
 	}
 
 	/**
@@ -94,6 +93,17 @@ public final class RandomStringBuilder {
 				"length(int desiredLength) and/or length(int min,int max) can only be specified once");
 		length = minLength + (int) (Math.random() * ((maxLength - minLength) + 1));
 		lengthSet = true;
+		return this;
+	}
+
+	/**
+	 * Sets the {@link RandomStringBuilder} to include numeric characters in the string that {@link #build()} returns.
+	 *
+	 * @return Returns "this" as part of the builder pattern.
+	 * @since 1.0.0
+	 */
+	public RandomStringBuilder numeric() {
+		numeric = true;
 		return this;
 	}
 
