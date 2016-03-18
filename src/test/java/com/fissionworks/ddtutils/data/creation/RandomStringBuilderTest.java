@@ -48,6 +48,33 @@ public class RandomStringBuilderTest {
 		Assert.assertEquals(actualString.length(), RandomStringBuilder.DEAFULT_LENGTH);
 	}
 
+	@Test
+	public void buildAndClear_withParametersSet_shouldClearAllSetParamters() {
+		final int initialLength = 20;
+		final int secondLength = 12;
+		final RandomStringBuilder builder = new RandomStringBuilder().alphabetic().length(initialLength);
+		final String firstString = builder.buildAndClear();
+		Assert.assertTrue(StringUtils.isAlpha(firstString), firstString);
+		Assert.assertEquals(firstString.length(), initialLength);
+		final String secondString = builder.numeric().length(secondLength).build();
+		Assert.assertTrue(StringUtils.isNumeric(secondString), secondString);
+		Assert.assertEquals(secondString.length(), secondLength);
+	}
+
+	@Test
+	public void clear_afterSettingParameters_shouldClearAllSetParamters() {
+		final int initialLength = 20;
+		final int secondLength = 12;
+		final RandomStringBuilder builder = new RandomStringBuilder().alphabetic().length(initialLength);
+		final String firstString = builder.build();
+		Assert.assertTrue(StringUtils.isAlpha(firstString), firstString);
+		Assert.assertEquals(firstString.length(), initialLength);
+		builder.clear();
+		final String secondString = builder.numeric().length(secondLength).build();
+		Assert.assertTrue(StringUtils.isNumeric(secondString), secondString);
+		Assert.assertEquals(secondString.length(), secondLength);
+	}
+
 	@Test(expectedExceptions = IllegalArgumentException.class)
 	public void length_withExactLengthAfterLengthRangeCall_shouldThrowException() {
 		new RandomStringBuilder().length(1, 5).length(2);
@@ -92,4 +119,5 @@ public class RandomStringBuilderTest {
 	public void length_withZeroLength_shouldThrowException() {
 		new RandomStringBuilder().length(0);
 	}
+
 }
