@@ -1,4 +1,4 @@
-package com.fissionworks.ddtutils.data.creation;
+package com.fissionworks.ddtutils.data.generator;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.Validate;
@@ -18,26 +18,36 @@ public final class RandomStringBuilder {
      * @since 1.0.0
      */
     public static final int DEAFULT_LENGTH = 10;
-
-    private boolean alphabetic = false;
+    /**
+     * The set of lowercase letters set using {@link #lowercase()}.
+     *
+     * @since 1.0.0
+     */
+    public static final String LOWERCASE = "abcdefghijklmnopqrstuvwxyz";
+    /**
+     * The set of numbers set using {@link #numeric()}.
+     *
+     * @since 1.0.0
+     */
+    public static final String NUMBERS = "0123456789";
+    /**
+     * The set of uppercase letters set using {@link #uppercase()}.
+     *
+     * @since 1.0.0
+     */
+    public static final String UPPERCASE = LOWERCASE.toUpperCase();
 
     private int length = DEAFULT_LENGTH;
 
     private boolean lengthSet = false;
 
+    private boolean lowercase = false;
+
     private boolean numeric = false;
 
-    /**
-     * Sets the {@link RandomStringBuilder} to include alphabetic characters in the string that
-     * {@link #build()} returns.
-     *
-     * @return Returns "this" as part of the builder pattern.
-     * @since 1.0.0
-     */
-    public RandomStringBuilder alphabetic() {
-        alphabetic = true;
-        return this;
-    }
+    private boolean spaces = false;
+
+    private boolean uppercase = false;
 
     /**
      * Creates a randomized string based on all previously set parameters. If no parameters are set, the
@@ -47,11 +57,8 @@ public final class RandomStringBuilder {
      * @since 1.0.0
      */
     public String build() {
-        if (!alphabetic && !numeric) {
-            alphabetic = true;
-            numeric = true;
-        }
-        return RandomStringUtils.random(length, alphabetic, numeric);
+        final String sourceString = getSourceString();
+        return RandomStringUtils.random(length, 0, sourceString.length(), false, false, sourceString.toCharArray());
     }
 
     /**
@@ -67,16 +74,18 @@ public final class RandomStringBuilder {
     }
 
     /**
-     * Clears all previously set parameters ({@link #alphabetic()}, {@link #numeric()}, etc.), restoring the
+     * Clears all previously set parameters ({@link #lowercase()}, {@link #numeric()}, etc.), restoring the
      * RandomStringBuilder to its initial default state.
      *
      * @since 1.0.0
      */
     public void clear() {
-        alphabetic = false;
+        lowercase = false;
+        uppercase = false;
         length = DEAFULT_LENGTH;
         lengthSet = false;
         numeric = false;
+        spaces = false;
     }
 
     /**
@@ -124,7 +133,19 @@ public final class RandomStringBuilder {
     }
 
     /**
-     * Sets the {@link RandomStringBuilder} to include numeric characters in the string that is built.
+     * Sets the {@link RandomStringBuilder} to allow lowercase alphabetic characters in the string that is
+     * built.
+     *
+     * @return Returns "this" as part of the builder pattern.
+     * @since 1.0.0
+     */
+    public RandomStringBuilder lowercase() {
+        this.lowercase = true;
+        return this;
+    }
+
+    /**
+     * Sets the {@link RandomStringBuilder} to allow numeric characters in the string that is built.
      *
      * @return Returns "this" as part of the builder pattern.
      * @since 1.0.0
@@ -132,6 +153,51 @@ public final class RandomStringBuilder {
     public RandomStringBuilder numeric() {
         numeric = true;
         return this;
+    }
+
+    /**
+     * Sets the {@link RandomStringBuilder} to allow spaces in the string that is built. Note that the
+     * generated string may begin or end with spaces so for cases in which the string desired should not begin
+     * or end with blank space a trim operation on the returned string is required.
+     *
+     * @return Returns "this" as part of the builder pattern.
+     * @since 1.0.0
+     */
+    public RandomStringBuilder spaces() {
+        spaces = true;
+        return this;
+    }
+
+    /**
+     * Sets the {@link RandomStringBuilder} to allow uppercase alphabetic characters in the string that is
+     * built.
+     *
+     * @return Returns "this" as part of the builder pattern.
+     * @since 1.0.0
+     */
+    public RandomStringBuilder uppercase() {
+        this.uppercase = true;
+        return this;
+    }
+
+    private String getSourceString() {
+        final StringBuilder sb = new StringBuilder();
+        if (lowercase) {
+            sb.append(LOWERCASE);
+        }
+        if (uppercase) {
+            sb.append(UPPERCASE);
+        }
+        if (numeric) {
+            sb.append(NUMBERS);
+        }
+        if (spaces) {
+            sb.append(" ");
+        }
+        if (sb.length() == 0) {
+            sb.append(LOWERCASE + UPPERCASE + NUMBERS);
+        }
+        return sb.toString();
     }
 
 }
