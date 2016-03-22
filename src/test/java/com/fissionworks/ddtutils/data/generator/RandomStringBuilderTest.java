@@ -24,7 +24,7 @@ public class RandomStringBuilderTest {
 
     @Test
     public void build_withMinLengthZeroAndNonZeroMaxLength_shouldGenerateAlphanumericStringInRange() {
-        final int minLength = 0;
+        final int minLength = 1;
         final int maxLength = 4;
         // Generate and test multiple strings to increase probability that all length possibilities
         // created/tested
@@ -54,6 +54,13 @@ public class RandomStringBuilderTest {
     public void build_withSpacesSet_shouldCreateDefaultLengthStringOfSpaces() {
         final String actualString = new RandomStringBuilder().spaces().build();
         Assert.assertTrue(StringUtils.isBlank(actualString));
+        Assert.assertEquals(actualString.length(), RandomStringBuilder.DEAFULT_LENGTH);
+    }
+
+    @Test
+    public void build_withSpecialCharactersSet_shouldCreateDefaultLengthSpecialCharacterString() {
+        final String actualString = new RandomStringBuilder().specialCharacters().build();
+        Assert.assertTrue(StringUtils.containsOnly(actualString, RandomStringBuilder.SPECIAL_CHARACTERS));
         Assert.assertEquals(actualString.length(), RandomStringBuilder.DEAFULT_LENGTH);
     }
 
@@ -114,13 +121,13 @@ public class RandomStringBuilderTest {
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)
-    public void length_withMinAndMaxLengthZero_shouldThrowException() {
-        new RandomStringBuilder().length(0, 0);
+    public void length_withMinLengthGreaterThanMaxLength_shouldThrowException() {
+        new RandomStringBuilder().length(5, 4);
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)
-    public void length_withMinLengthGreaterThanMaxLength_shouldThrowException() {
-        new RandomStringBuilder().length(5, 4);
+    public void length_withMinLengthZero_shouldThrowException() {
+        new RandomStringBuilder().length(0, 5);
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)

@@ -31,11 +31,18 @@ public final class RandomStringBuilder {
      */
     public static final String NUMBERS = "0123456789";
     /**
+     * The set of numbers set using {@link #specialCharacters()}.
+     *
+     * @since 1.0.0
+     */
+    public static final String SPECIAL_CHARACTERS = "~!@#$%^&*()_+`-={}|[]\\:\";'<>?,./";
+
+    /**
      * The set of uppercase letters set using {@link #uppercase()}.
      *
      * @since 1.0.0
      */
-    public static final String UPPERCASE = LOWERCASE.toUpperCase();
+    public static final String UPPERCASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
     private int length = DEAFULT_LENGTH;
 
@@ -46,6 +53,8 @@ public final class RandomStringBuilder {
     private boolean numeric = false;
 
     private boolean spaces = false;
+
+    private boolean specialCharacters = false;
 
     private boolean uppercase = false;
 
@@ -86,6 +95,7 @@ public final class RandomStringBuilder {
         lengthSet = false;
         numeric = false;
         spaces = false;
+        specialCharacters = false;
     }
 
     /**
@@ -109,22 +119,21 @@ public final class RandomStringBuilder {
 
     /**
      * Sets a length range between which the length of the generated string will randomly fall. The minimum
-     * length must be greater than or equal to zero, and the max length must be greater than or equal to the
-     * min length (or greater than the min length if the min length is zero). This method will generate an
-     * {@link IllegalArgumentException} if called multiple times or after already setting an exact length
-     * using {@link #length(int)}.
+     * length must be greater than or equal to one, and the max length must be greater than or equal to the
+     * min length . This method will generate an {@link IllegalArgumentException} if called multiple times or
+     * after already setting an exact length using {@link #length(int)}.
      *
      * @param minLength
-     *            The minimum length desired for the random string. Must be greater than or equal to 0.
+     *            The minimum length desired for the random string. Must be greater than or equal to 1.
      * @param maxLength
      *            The maximum length desired for the random string. Must be greater than or equal to the min
-     *            length, or greater than min length if min length is 0.
+     *            length.
      * @return Returns "this" as part of the builder pattern.
      * @since 1.0.0
      */
     public RandomStringBuilder length(final int minLength, final int maxLength) {
+        Validate.isTrue(minLength >= 1, "minLength must be >= 1");
         Validate.isTrue(maxLength >= minLength, "Maxlength must be >= minlength");
-        Validate.isTrue(minLength >= 0 && maxLength > 0, "minLength must be >= 0 and maxLength must be > 0");
         Validate.isTrue(!lengthSet,
                 "length(int desiredLength) and/or length(int min,int max) can only be specified once");
         length = minLength + (int) (Math.random() * ((maxLength - minLength) + 1));
@@ -169,6 +178,17 @@ public final class RandomStringBuilder {
     }
 
     /**
+     * Sets the {@link RandomStringBuilder} to allow special characters in the string that is built.
+     *
+     * @return Returns "this" as part of the builder pattern.
+     * @since 1.0.0
+     */
+    public RandomStringBuilder specialCharacters() {
+        specialCharacters = true;
+        return this;
+    }
+
+    /**
      * Sets the {@link RandomStringBuilder} to allow uppercase alphabetic characters in the string that is
      * built.
      *
@@ -193,6 +213,9 @@ public final class RandomStringBuilder {
         }
         if (spaces) {
             sb.append(" ");
+        }
+        if (specialCharacters) {
+            sb.append(SPECIAL_CHARACTERS);
         }
         if (sb.length() == 0) {
             sb.append(LOWERCASE + UPPERCASE + NUMBERS);
