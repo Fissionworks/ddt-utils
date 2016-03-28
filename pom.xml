@@ -8,7 +8,7 @@
 
 	<name>DDT Utilities</name>
 	<description>Data Driven Testing Utilities(DDT Utils) is a small collection of utilities which provide useful functionality to enhance/simplify data driven testing.</description>
-	<url>https://github.com/stevensimmons/ddt-utils</url>
+	<url>https://github.com/Fissionworks/ddt-utils</url>
 
 	<licenses>
 		<license>
@@ -24,10 +24,21 @@
 	</organization>
 
 	<scm>
-		<connection>scm:git:git@github.com:stevensimmons/ddt-utils.git</connection>
-		<developerConnection>scm:git:git@github.com:stevensimmons/ddt-utils.git</developerConnection>
-		<url>https://github.com/stevensimmons/ddt-utils</url>
+		<connection>scm:git:git@github.com:Fissionworks/ddt-utils.git</connection>
+		<developerConnection>scm:git:git@github.com:Fissionworks/ddt-utils.git</developerConnection>
+		<url>https://github.com/Fissionworks/ddt-utils</url>
 	</scm>
+
+	<issueManagement>
+		<system>Github</system>
+		<url>https://github.com/Fissionworks/ddt-utils/issues</url>
+	</issueManagement>
+
+	<ciManagement>
+		<system>Travis</system>
+		<url>https://travis-ci.org/Fissionworks/ddt-utils</url>
+	</ciManagement>
+	
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>

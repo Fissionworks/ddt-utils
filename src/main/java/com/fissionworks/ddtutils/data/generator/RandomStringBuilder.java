@@ -13,7 +13,8 @@ import org.apache.commons.lang3.Validate;
  */
 public final class RandomStringBuilder {
     /**
-     * The string length created if neither {@link #length(int)} or {@link #length(int, int)} are called.
+     * The string length created if neither {@link #length(int)} or {@link #length(int, int)} are called prior
+     * to using {@link #build()}.
      *
      * @since 1.0.0
      */
@@ -57,6 +58,28 @@ public final class RandomStringBuilder {
     private boolean specialCharacters = false;
 
     private boolean uppercase = false;
+
+    /**
+     * Allows building a random string based on the characters passed in as the source string, with a length
+     * within the range between the min and max provided. Note that all characters are not guaranteed to be
+     * used.
+     *
+     * @param sourceString
+     *            The characters to select from when generating a random string.
+     * @param minLength
+     *            The minimum length string desired; must be greater than zero.
+     * @param maxLength
+     *            The maximum length string desired; must be greater than or equal to the min length.
+     * @return A random string based on the arguments provided.
+     * @since 1.0.0
+     */
+    public static String buildFromString(final String sourceString, final int minLength, final int maxLength) {
+        Validate.notEmpty(sourceString, "sourceCharacters must not be null or empty.");
+        Validate.isTrue(minLength > 0, "minLength must be greater than zero.");
+        Validate.isTrue(maxLength >= minLength, "maxLength must be greater than or equal to minLength.");
+        final int length = minLength + (int) (Math.random() * ((maxLength - minLength) + 1));
+        return RandomStringUtils.random(length, 0, sourceString.length(), false, false, sourceString.toCharArray());
+    }
 
     /**
      * Creates a randomized string based on all previously set parameters. If no parameters are set, the

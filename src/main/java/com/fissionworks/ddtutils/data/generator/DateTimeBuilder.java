@@ -21,7 +21,7 @@ import java.time.ZonedDateTime;
  * of a time shift for daylight savings will result in a datetime of 18:00 the next day. In use cases where
  * the daylight savings time shift needs to be accounted for, call {@link #hours(int)} with '24 * number of
  * days needed' instead.</li>
- * <li>The datetime adjustments are cummulative, so calling {@link #years(int)} twice and passing in '2' both
+ * <li>The datetime adjustments are cumulative, so calling {@link #years(int)} twice and passing in '2' both
  * times is equivalent to a single call to {@link #years(int)} and passing in '4'</li>
  * </ul>
  *

@@ -86,6 +86,49 @@ public class RandomStringBuilderTest {
         Assert.assertEquals(secondString.length(), secondLength);
     }
 
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void buildFromString_withEmptySourceString_shouldThrowException() {
+        RandomStringBuilder.buildFromString("", 5, 10);
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void buildFromString_withMaxLengthLessThanMinLength_shouldThrowException() {
+        RandomStringBuilder.buildFromString("abc123", 11, 10);
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void buildFromString_withNegativeMinLength_shouldThrowException() {
+        RandomStringBuilder.buildFromString("xys", -1, 2);
+    }
+
+    @Test(expectedExceptions = NullPointerException.class)
+    public void buildFromString_withNullSourceString_shouldThrowException() {
+        RandomStringBuilder.buildFromString(null, 5, 10);
+    }
+
+    @Test
+    public void buildFromString_withValidArguments_shouldGenerateStringUsingSpecifiedValues() {
+        final int min = 3;
+        final int max = 7;
+        final String sourceString = "abc123!@#";
+        String actual = "";
+        // Generate and test multiple strings to increase probability that all length/character possibilities
+        // are created/tested
+        for (int i = 0; i < 20; i++) {
+            actual = RandomStringBuilder.buildFromString(sourceString, min, max);
+            Assert.assertNotNull(actual);
+            Assert.assertTrue(min <= actual.length() && actual.length() <= max,
+                    "Generated string length should be between min and max values");
+            Assert.assertTrue(StringUtils.containsOnly(actual, sourceString),
+                    "Generated string contains unspecified characters");
+        }
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void buildFromString_withZeroMinLength_shouldThrowException() {
+        RandomStringBuilder.buildFromString("xys", 0, 2);
+    }
+
     @Test
     public void clear_afterSettingParameters_shouldClearAllSetParameters() {
         final int initialLength = 20;
