@@ -86,11 +86,11 @@ public final class RandomStringBuilder {
      * Generates a random string based on a specifically formatted keyword string that would generally be
      * stored in a spreadsheet, database, etc. as part of a data driven test set. The keyword string mirrors
      * the parameters that can be set when using the RandomStringBuilder with the builder pattern and
-     * {@link #build()}. The format for the parameterString argument is to include the main '[randstring]'
-     * keyword enclosing any number of other keywords to specify the desired configuration of the random
-     * string to be generated (i.e [randstring{uppercase}{length=27}], [randstring{numeric}{specialchars}]).
-     * All keywords are case insensitive, and have built in tolerance for leading/trailing whitespace. The
-     * following details the parameterString keywords:
+     * {@link #build()}. The format for the parameterString argument is to include the '[randstring]' keyword
+     * enclosing any number of modifiers to specify the desired configuration of the random string to be
+     * generated (i.e [randstring{uppercase}{length=27}], [randstring{numeric}{specialchars}]). The keyword
+     * and modifiers are case insensitive, and have built in tolerance for leading/trailing whitespace. The
+     * following details the [randstring] keyword and modifiers:
      * <ul>
      * <li>[randstring] - The main keyword for generating a random string, which is the minimum required
      * argument to the generate method and encloses the other formatting keywords. Passing in [randstring]
@@ -149,8 +149,8 @@ public final class RandomStringBuilder {
      * Checks if the passed in String is a valid parameter string as required by {@link #generate(String)}.
      * Leading/trailing whitespace is ignored, but false is returned if there are any extra characters
      * surrounding the passed in targetString. example: '[randstring{uppercase}{spaces}]' would return true,
-     * but 'foo[randstring{lowercase}]bar' returns false. The structure of the internal keywords ({uppercase},
-     * {numeric}, etc.) is not evaluated.
+     * but 'foo[randstring{lowercase}]bar' returns false. The structure of the internal modifiers
+     * ({uppercase}, {numeric}, etc.) is not evaluated.
      *
      * @param targetString
      *            The string to determine status of.

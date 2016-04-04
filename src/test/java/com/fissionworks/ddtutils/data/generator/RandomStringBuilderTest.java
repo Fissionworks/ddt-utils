@@ -7,7 +7,7 @@ import org.testng.annotations.Test;
 public class RandomStringBuilderTest {
 
     @Test
-    public void build_withIncludeSpecified_shouldCreateDefaultLengthStringFromSourceChars() {
+    public void build_withIncludeSpecified_shouldCreateDefaultLengthStringFromInclude() {
         final String sourceChars = "abc123[]\\";
         final String actualString = new RandomStringBuilder().include(sourceChars).build();
         Assert.assertTrue(StringUtils.containsOnly(actualString, sourceChars));
@@ -115,6 +115,11 @@ public class RandomStringBuilderTest {
         Assert.assertTrue(22 <= actual.length() && 75 >= actual.length());
     }
 
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void generate_withEmptyIncludeKeyword_shouldThrowException() {
+        RandomStringBuilder.generate("[randstring{Include=[]}]");
+    }
+
     @Test
     public void generate_withEmptyParameterString_shouldCreateDefaultLengthAlphanumericString() {
         final String actualString = RandomStringBuilder.generate("[randString]");
@@ -122,9 +127,12 @@ public class RandomStringBuilderTest {
         Assert.assertEquals(actualString.length(), RandomStringBuilder.DEFAULT_LENGTH);
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
-    public void generate_withEmptySourceCharsKeyword_shouldThrowException() {
-        RandomStringBuilder.generate("[randstring{sourcechars=[]}]");
+    @Test
+    public void generate_withIncludeKeyword_shouldGenerateUsingInclude() {
+        final String sourceChars = "abc123]}";
+        final String actual = RandomStringBuilder.generate("[randstring{include=[" + sourceChars + "]}]");
+        Assert.assertTrue(StringUtils.containsOnly(actual, sourceChars));
+        Assert.assertEquals(actual.length(), RandomStringBuilder.DEFAULT_LENGTH);
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)
@@ -287,14 +295,6 @@ public class RandomStringBuilderTest {
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void generate_withoutRandStringKeyword_shouldThrowExeption() {
         RandomStringBuilder.generate("[notarandstring]");
-    }
-
-    @Test
-    public void generate_withSourceCharsKeyword_shouldGenerateUsingSourceChars() {
-        final String sourceChars = "abc123]}";
-        final String actual = RandomStringBuilder.generate("[randstring{include=[" + sourceChars + "]}]");
-        Assert.assertTrue(StringUtils.containsOnly(actual, sourceChars));
-        Assert.assertEquals(actual.length(), RandomStringBuilder.DEFAULT_LENGTH);
     }
 
     @Test

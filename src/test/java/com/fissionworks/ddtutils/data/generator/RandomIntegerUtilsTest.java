@@ -101,20 +101,20 @@ public class RandomIntegerUtilsTest {
     }
 
     @Test
-    public void ReflectionUtils_shouldHaveInaccessibleConstructor() {
+    public void RandomIntegerUtils_shouldHaveInaccessibleConstructor() {
         final Constructor<?>[] constructors = RandomIntegerUtils.class.getDeclaredConstructors();
         final Constructor<?> constructor = constructors[0];
         Assert.assertFalse(constructor.isAccessible(), "Constructor should be inaccessible");
     }
 
     @Test
-    public void ReflectionUtils_shouldHaveOneConstructor() {
+    public void RandomIntegerUtils_shouldHaveOneConstructor() {
         final Constructor<?>[] constructors = RandomIntegerUtils.class.getDeclaredConstructors();
         Assert.assertEquals(constructors.length, 1);
     }
 
     @Test(expectedExceptions = InvocationTargetException.class)
-    public void ReflectionUtilsInstantiationThroughReflection_shouldThrowException() throws Exception {
+    public void RandomIntegerUtilsInstantiationThroughReflection_shouldThrowException() throws Exception {
         final Constructor<?>[] constructors = RandomIntegerUtils.class.getDeclaredConstructors();
         final Constructor<?> constructor = constructors[0];
         constructor.setAccessible(true);
