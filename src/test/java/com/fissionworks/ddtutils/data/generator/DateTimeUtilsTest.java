@@ -275,6 +275,36 @@ public class DateTimeUtilsTest {
     }
 
     @Test
+    public void generate_withStartModifierOnly_shouldReturnStartDate() throws InterruptedException {
+        waitForCleanTime();
+        final ZonedDateTime expected = ZonedDateTime.now().minusHours(5);
+        final ZonedDateTime actual = DateTimeUtils
+                .generate("[datetime{start=" + ZonedDateTime.now(ZoneId.of("UTC")).minusHours(5) + "}]");
+        Assert.assertNotNull(actual);
+        Assert.assertEquals(actual.getHour(), expected.getHour());
+        Assert.assertEquals(actual.getMinute(), expected.getMinute());
+        Assert.assertEquals(actual.getDayOfMonth(), expected.getDayOfMonth());
+        Assert.assertEquals(actual.getMonthValue(), expected.getMonthValue());
+        Assert.assertEquals(actual.getYear(), expected.getYear());
+        Assert.assertEquals(actual.getZone(), expected.getZone());
+    }
+
+    @Test
+    public void generate_withStartModifierWithInternalWhitespace_shouldReturnStartDate() throws InterruptedException {
+        waitForCleanTime();
+        final ZonedDateTime expected = ZonedDateTime.now().minusHours(5);
+        final ZonedDateTime actual = DateTimeUtils
+                .generate("[datetime{  start  =  " + ZonedDateTime.now(ZoneId.of("UTC")).minusHours(5) + "   }  ]");
+        Assert.assertNotNull(actual);
+        Assert.assertEquals(actual.getHour(), expected.getHour());
+        Assert.assertEquals(actual.getMinute(), expected.getMinute());
+        Assert.assertEquals(actual.getDayOfMonth(), expected.getDayOfMonth());
+        Assert.assertEquals(actual.getMonthValue(), expected.getMonthValue());
+        Assert.assertEquals(actual.getYear(), expected.getYear());
+        Assert.assertEquals(actual.getZone(), expected.getZone());
+    }
+
+    @Test
     public void generate_withZoneModifier_shouldReturnCurrentDateTimeWithAdjusment() throws InterruptedException {
         final String zoneId = "Africa/Djibouti";
         waitForCleanTime();

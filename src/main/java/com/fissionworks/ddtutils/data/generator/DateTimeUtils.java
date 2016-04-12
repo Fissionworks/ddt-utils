@@ -27,10 +27,12 @@ public final class DateTimeUtils {
 
     private static final Pattern PERIOD_MODIFIER_PATTERN = Pattern.compile("(?<=\\{) *[-+]?[0-9]+[yMwd]{1} *(?<!})");
 
+    private static final Pattern START_MODIFIER_PATTERN = Pattern.compile("\\{ *start *=.* *}");
+
     private static final Pattern ZONE_MODIFIER_PATTERN = Pattern.compile("\\{ *zoneid *=.* *}");
 
     private DateTimeUtils() throws IllegalAccessException {
-        throw new IllegalAccessException("RandomIntegerUtils is a utility class, and should not be instantiated");
+        throw new IllegalAccessException("DateTimeUtils is a utility class, and should not be instantiated");
     }
 
     /**
@@ -72,6 +74,12 @@ public final class DateTimeUtils {
      * <li>m - minutes</li>
      * </ul>
      * </li>
+     * <li>{zoneid=xxxxx} - sets the zone desired for the retuned DateTime; Any string value that can be
+     * parsed by {@link ZoneId#of(String)} is acceptable (i.e. America/New_York, UTC, Pacific/Honolulu,
+     * -07:00, etc.)</li>
+     * <li>{start=xxxxx} - sets the starting datetime to generate a datetime relative to, if a starting
+     * datetime other than {@link ZonedDateTime#now()} is required. The required format for the start datetime
+     * is ISO_ZONED_DATE_TIME.</li>
      * </ul>
      * Examples of [datetime] strings and the resultant {@link ZonedDateTime}:
      * <ul>
@@ -93,7 +101,8 @@ public final class DateTimeUtils {
                 "'" + parameterString + "' must contain the '[datetime]' keyword");
         final Period period = getPeriodModification(parameterString);
         final Duration duration = getDurationModification(parameterString);
-        return ZonedDateTime.now(getZoneId(parameterString)).plus(period).plus(duration);
+        final ZonedDateTime startDateTime = getStartDateTime(parameterString);
+        return startDateTime.withZoneSameInstant(getZoneId(parameterString)).plus(period).plus(duration);
     }
 
     /**
@@ -166,12 +175,22 @@ public final class DateTimeUtils {
         return period;
     }
 
+    private static ZonedDateTime getStartDateTime(final String parameterString) {
+        final Matcher matcher = START_MODIFIER_PATTERN.matcher(parameterString);
+        if (matcher.find()) {
+            final Matcher startDateMatcher = Pattern.compile("(?<==)[^\\}]*").matcher(parameterString);
+            startDateMatcher.find();
+            return ZonedDateTime.parse(startDateMatcher.group().trim());
+        }
+        return ZonedDateTime.now();
+    }
+
     private static ZoneId getZoneId(final String parameterString) {
         final Matcher matcher = ZONE_MODIFIER_PATTERN.matcher(parameterString);
         if (matcher.find()) {
             final Matcher zoneIdMatcher = Pattern.compile("(?<==)[^\\}]*").matcher(parameterString);
             zoneIdMatcher.find();
-            return ZoneId.of(StringUtils.strip(StringUtils.replace(zoneIdMatcher.group(), "}", "")));
+            return ZoneId.of(StringUtils.strip(zoneIdMatcher.group()));
         }
         return ZoneId.systemDefault();
     }
