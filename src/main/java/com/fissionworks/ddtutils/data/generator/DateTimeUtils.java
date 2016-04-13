@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.time.Period;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,9 +28,11 @@ public final class DateTimeUtils {
 
     private static final Pattern PERIOD_MODIFIER_PATTERN = Pattern.compile("(?<=\\{) *[-+]?[0-9]+[yMwd]{1} *(?<!})");
 
-    private static final Pattern START_MODIFIER_PATTERN = Pattern.compile("\\{ *start *=.* *}");
+    private static final Pattern START_MODIFIER_PATTERN = Pattern.compile("(?<=\\{) *start *=[^\\}]*");
+    // private static final Pattern START_MODIFIER_PATTERN = Pattern.compile("\\{ *start *=[^\\}]*");
 
-    private static final Pattern ZONE_MODIFIER_PATTERN = Pattern.compile("\\{ *zoneid *=.* *}");
+    private static final Pattern ZONE_MODIFIER_PATTERN = Pattern.compile("(?<=\\{) *zoneid *=[^\\}]*");
+    // private static final Pattern ZONE_MODIFIER_PATTERN = Pattern.compile("\\{ *zoneid *=[^\\}]*");
 
     private DateTimeUtils() throws IllegalAccessException {
         throw new IllegalAccessException("DateTimeUtils is a utility class, and should not be instantiated");
@@ -99,6 +102,7 @@ public final class DateTimeUtils {
     public static ZonedDateTime generate(final String parameterString) {
         Validate.isTrue(isDatetimeKeyword(parameterString),
                 "'" + parameterString + "' must contain the '[datetime]' keyword");
+        validateParameterString(parameterString);
         final Period period = getPeriodModification(parameterString);
         final Duration duration = getDurationModification(parameterString);
         final ZonedDateTime startDateTime = getStartDateTime(parameterString);
@@ -145,6 +149,14 @@ public final class DateTimeUtils {
         return duration;
     }
 
+    private static int getModifierCount(final Matcher matcher) {
+        int count = 0;
+        while (matcher.find()) {
+            count++;
+        }
+        return count;
+    }
+
     private static Period getPeriod(final String group) {
         Period period = Period.ZERO;
         final String temporalModifier = group.trim();
@@ -177,12 +189,18 @@ public final class DateTimeUtils {
 
     private static ZonedDateTime getStartDateTime(final String parameterString) {
         final Matcher matcher = START_MODIFIER_PATTERN.matcher(parameterString);
+        ZonedDateTime start = ZonedDateTime.now();
         if (matcher.find()) {
-            final Matcher startDateMatcher = Pattern.compile("(?<==)[^\\}]*").matcher(parameterString);
+            final Matcher startDateMatcher = Pattern.compile("(?<==)[^\\}]*").matcher(matcher.group());
             startDateMatcher.find();
-            return ZonedDateTime.parse(startDateMatcher.group().trim());
+            try {
+                start = ZonedDateTime.parse(startDateMatcher.group().trim());
+            } catch (final DateTimeParseException exception) {
+                throw new IllegalArgumentException("'" + startDateMatcher.group() + "' is not a valid start datetime",
+                        exception);
+            }
         }
-        return ZonedDateTime.now();
+        return start;
     }
 
     private static ZoneId getZoneId(final String parameterString) {
@@ -195,4 +213,20 @@ public final class DateTimeUtils {
         return ZoneId.systemDefault();
     }
 
+    private static void validateParameterString(final String parameterString) {
+        Validate.isTrue(getModifierCount(ZONE_MODIFIER_PATTERN.matcher(parameterString)) < 2,
+                "Only one {zoneId} modifier allowed per parameterString");
+        Validate.isTrue(getModifierCount(START_MODIFIER_PATTERN.matcher(parameterString)) < 2,
+                "Only one {start} modifier allowed per parameterString");
+        String reducedString = DURATION_MODIFIER_PATTERN.matcher(parameterString).replaceAll(" ");
+        reducedString = PERIOD_MODIFIER_PATTERN.matcher(reducedString).replaceAll(" ");
+        reducedString = ZONE_MODIFIER_PATTERN.matcher(reducedString).replaceAll(" ");
+        reducedString = START_MODIFIER_PATTERN.matcher(reducedString).replaceAll(" ");
+        reducedString = Pattern.compile("\\{ *\\}").matcher(reducedString).replaceAll(" ");
+        Validate.isTrue(
+                Pattern.compile("^\\[ *datetime *\\]$", Pattern.CASE_INSENSITIVE).matcher(reducedString.trim())
+                        .matches(),
+                "Invalid parameter string; The following is the parameter string with the valid keywords removed: "
+                        + reducedString);
+    }
 }

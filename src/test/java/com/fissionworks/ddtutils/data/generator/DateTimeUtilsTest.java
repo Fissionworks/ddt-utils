@@ -42,15 +42,18 @@ public class DateTimeUtilsTest {
         final int dayAdjustment = -12;
         final int hourAdjustment = 5;
         final int minuteAdjustment = -7;
+        final String start = "2016-04-12T13:06:04.157-04:00[Africa/Djibouti]";
         final String zoneId = "Africa/Djibouti";
         waitForCleanTime();
-        final ZonedDateTime expected = ZonedDateTime.now(ZoneId.of(zoneId)).plus(Period.ofYears(yearAdjustment))
+        final ZonedDateTime expected = ZonedDateTime.parse(start).plus(Period.ofYears(yearAdjustment))
                 .plus(Period.ofMonths(monthAdjustment)).plus(Period.ofWeeks(weekAdjustment))
                 .plus(Period.ofDays(dayAdjustment)).plus(Duration.ofHours(hourAdjustment))
                 .plus(Duration.ofMinutes(minuteAdjustment));
         final ZonedDateTime actual = DateTimeUtils.generate(String.format(
-                "  [  datetime { zoneid = %s } {  +%sy } { %sM } {  +%sw }  { %sd } { +%sh } { %sm } ]", zoneId,
-                yearAdjustment, monthAdjustment, weekAdjustment, dayAdjustment, hourAdjustment, minuteAdjustment));
+                "  [  datetime { zoneid = %s } {  +%sy } { %sM } {  +%sw }  { %sd } { +%sh } { %sm } {start=" + start
+                        + "}]",
+                zoneId, yearAdjustment, monthAdjustment, weekAdjustment, dayAdjustment, hourAdjustment,
+                minuteAdjustment));
         Assert.assertNotNull(actual);
         Assert.assertEquals(actual.getHour(), expected.getHour());
         Assert.assertEquals(actual.getMinute(), expected.getMinute());
@@ -72,6 +75,27 @@ public class DateTimeUtilsTest {
         Assert.assertEquals(actual.getMonthValue(), expected.getMonthValue());
         Assert.assertEquals(actual.getYear(), expected.getYear());
         Assert.assertEquals(actual.getZone(), expected.getZone());
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void generate_withInvalidCharacters_shouldThrowException() {
+        DateTimeUtils.generate("[datetime{+1y}x{zoneid=UTC}]");
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void generate_withInvalidStart_shouldThrowException() {
+        DateTimeUtils.generate("[datetime{start=xxx}]");
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void generate_withMultipleStartModifiers_shouldThrowException() throws InterruptedException {
+        DateTimeUtils.generate(
+                "[datetime{start=2016-04-12T12:19:07.549-04:00[America/New_York]}{start=2016-04-12T12:19:07.549-04:00[UTC]}]");
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void generate_withMultipleZoneModifiers_shouldThrowException() throws InterruptedException {
+        DateTimeUtils.generate("[datetime{zoneid=UTC}{zoneid=America/New_York}]");
     }
 
     @Test

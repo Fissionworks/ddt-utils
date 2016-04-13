@@ -214,7 +214,8 @@ public final class RandomStringBuilder {
         reducedString = SPECIAL_CHARS_PARAMETER_PATTERN.matcher(reducedString).replaceAll(" ");
         reducedString = UPPERCASE_PARAMETER_PATTERN.matcher(reducedString).replaceAll(" ");
         reducedString = SOURCE_CHARS_PARAMETER.matcher(reducedString).replaceAll(" ");
-        if (!Pattern.compile("^\\[ *randstring *\\]$", Pattern.CASE_INSENSITIVE).matcher(reducedString).matches()) {
+        if (!Pattern.compile("^\\[ *randstring *\\]$", Pattern.CASE_INSENSITIVE).matcher(reducedString.trim())
+                .matches()) {
             throw new IllegalArgumentException(
                     "Invalid parameter string; The following is the parameter string with the valid keywords removed: "
                             + reducedString);
