@@ -16,9 +16,51 @@ public class RandomIntegerUtilsTest {
                 "generate should create a integer from full range of integers");
     }
 
+    @Test
+    public void generate_withKeywordNoModifiers_shouldReturnAnyRandomInteger() {
+        final int actual = RandomIntegerUtils.generate("[randint]");
+        // hmmmm, not much to check here!
+        Assert.assertTrue(actual >= Integer.MIN_VALUE && actual <= Integer.MAX_VALUE,
+                "generate should create a integer from full range of integers");
+    }
+
+    @Test
+    public void generate_withKeywordNoModifiersAndInternalWhitespace_shouldReturnAnyRandomInteger() {
+        final int actual = RandomIntegerUtils.generate("[    randint     ]");
+        // hmmmm, not much to check here!
+        Assert.assertTrue(actual >= Integer.MIN_VALUE && actual <= Integer.MAX_VALUE,
+                "generate should create a integer from full range of integers");
+    }
+
+    @Test
+    public void generate_withKeywordNoModifiersAndLeadingTrailingWhitespace_shouldReturnAnyRandomInteger() {
+        final int actual = RandomIntegerUtils.generate("     [randint]     ");
+        // hmmmm, not much to check here!
+        Assert.assertTrue(actual >= Integer.MIN_VALUE && actual <= Integer.MAX_VALUE,
+                "generate should create a integer from full range of integers");
+    }
+
+    @Test
+    public void generate_withKeywordNoModifiersAndMixedCase_shouldReturnAnyRandomInteger() {
+        final int actual = RandomIntegerUtils.generate("[RaNdInT]");
+        // hmmmm, not much to check here!
+        Assert.assertTrue(actual >= Integer.MIN_VALUE && actual <= Integer.MAX_VALUE,
+                "generate should create a integer from full range of integers");
+    }
+
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void generate_withMinValueGreaterThanMaxValue_shouldThrowException() {
         RandomIntegerUtils.generate(10, 9);
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void generate_withMissingColon_shouldThrowException() {
+        RandomIntegerUtils.generate(String.format("[randint{range=5}]"));
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void generate_withNonNumericRangeValues_shouldThrowException() {
+        RandomIntegerUtils.generate(String.format("[randint{range=chicken:turtle}]"));
     }
 
     @Test
@@ -31,6 +73,58 @@ public class RandomIntegerUtilsTest {
         for (int i = 0; i < 20; i++) {
             actual = RandomIntegerUtils.generate(min, max);
             Assert.assertTrue(actual >= min && actual <= max, actual + ".");
+        }
+    }
+
+    @Test
+    public void generate_withValidRangeModifier_shouldReturnRandomIntegerInDesiredRange() {
+        int actual = Integer.MIN_VALUE;
+        final int min = -5;
+        final int max = 6;
+        // perform multiple checks to generate range of random numbers to test due dynamic nature of the
+        // random numbers
+        for (int i = 0; i < 20; i++) {
+            actual = RandomIntegerUtils.generate(String.format("[randint{range=%s:%s}]", min, max));
+            Assert.assertTrue(actual >= min && actual <= max, "|" + actual + "| is not in the specified range");
+        }
+    }
+
+    @Test
+    public void generate_withValidRangeModifierAndInternalWhitespace_shouldReturnRandomIntegerInDesiredRange() {
+        int actual = Integer.MIN_VALUE;
+        final int min = -5;
+        final int max = 6;
+        // perform multiple checks to generate range of random numbers to test due dynamic nature of the
+        // random numbers
+        for (int i = 0; i < 20; i++) {
+            actual = RandomIntegerUtils.generate(String.format("[randint{ range  =  %s  :  %s }]", min, max));
+            Assert.assertTrue(actual >= min && actual <= max, "|" + actual + "| is not in the specified range");
+        }
+    }
+
+    @Test
+    public void generate_withValidRangeModifierInternalWhitespace_shouldReturnRandomIntegerInDesiredRange() {
+        int actual = Integer.MIN_VALUE;
+        final int min = -5;
+        final int max = 6;
+        // perform multiple checks to generate range of random numbers to test due dynamic nature of the
+        // random numbers
+        for (int i = 0; i < 20; i++) {
+            actual = RandomIntegerUtils.generate(String.format("[  randint  {   range  =  %s  :  %s }]", min, max));
+            Assert.assertTrue(actual >= min && actual <= max, "|" + actual + "| is not in the specified range");
+        }
+    }
+
+    @Test
+    public void generate_withValidRangeModifierMixedCase_shouldReturnRandomIntegerInDesiredRange() {
+        int actual = Integer.MIN_VALUE;
+        final int min = -5;
+        final int max = 6;
+        // perform multiple checks to generate range of random numbers to test due dynamic nature of the
+        // random numbers
+        for (int i = 0; i < 20; i++) {
+            actual = RandomIntegerUtils.generate(String.format("[randint{RaNgE=%s:%s}]", min, max));
+            Assert.assertTrue(actual >= min && actual <= max, "|" + actual + "| is not in the specified range");
         }
     }
 
@@ -98,6 +192,31 @@ public class RandomIntegerUtilsTest {
             actual = RandomIntegerUtils.generateOdd(-3, 9);
             Assert.assertTrue(actual % 2 != 0);
         }
+    }
+
+    @Test
+    public void isRandomIntegerKeyword_withKeywordStringWithInternalWhitespace_shouldReturnTrue() {
+        Assert.assertTrue(RandomIntegerUtils.isRandomIntegerKeyword("    [    randint   {xxxxx}]   "));
+    }
+
+    @Test
+    public void isRandomIntegerKeyword_withKeywordStringWithLeadingTrailingWhitespace_shouldReturnTrue() {
+        Assert.assertTrue(RandomIntegerUtils.isRandomIntegerKeyword("    [randint{xxxxx}]   "));
+    }
+
+    @Test
+    public void isRandomIntegerKeyword_withKeywordStringWithMixedCase_shouldReturnTrue() {
+        Assert.assertTrue(RandomIntegerUtils.isRandomIntegerKeyword("[RaNdInT{xxxxx}]"));
+    }
+
+    @Test
+    public void isRandomIntegerKeyword_withNonKeywordString_shouldReturnFalse() {
+        Assert.assertFalse(RandomIntegerUtils.isRandomIntegerKeyword("[notarandint{xxxxx}]"));
+    }
+
+    @Test
+    public void isRandomIntegerKeyword_withSimpleKeywordString_shouldReturnTrue() {
+        Assert.assertTrue(RandomIntegerUtils.isRandomIntegerKeyword("[randint{xxxxx}]"));
     }
 
     @Test

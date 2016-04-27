@@ -29,10 +29,8 @@ public final class DateTimeUtils {
     private static final Pattern PERIOD_MODIFIER_PATTERN = Pattern.compile("(?<=\\{) *[-+]?[0-9]+[yMwd]{1} *(?<!})");
 
     private static final Pattern START_MODIFIER_PATTERN = Pattern.compile("(?<=\\{) *start *=[^\\}]*");
-    // private static final Pattern START_MODIFIER_PATTERN = Pattern.compile("\\{ *start *=[^\\}]*");
 
     private static final Pattern ZONE_MODIFIER_PATTERN = Pattern.compile("(?<=\\{) *zoneid *=[^\\}]*");
-    // private static final Pattern ZONE_MODIFIER_PATTERN = Pattern.compile("\\{ *zoneid *=[^\\}]*");
 
     private DateTimeUtils() throws IllegalAccessException {
         throw new IllegalAccessException("DateTimeUtils is a utility class, and should not be instantiated");
