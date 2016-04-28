@@ -16,6 +16,58 @@ public class RandomIntegerUtilsTest {
                 "generate should create a integer from full range of integers");
     }
 
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void generate_withEvenAndOddModifier_shouldThrowException() {
+        RandomIntegerUtils.generate("[randint{even}{odd}]");
+    }
+
+    @Test
+    public void generate_withEvenAndRangeModifiers_shouldReturnRandomIntegerInDesiredRange() {
+        int actual = Integer.MIN_VALUE;
+        final int min = -27;
+        final int max = 28;
+        // perform multiple checks to generate range of random numbers to test due dynamic nature of the
+        // random numbers
+        for (int i = 0; i < 20; i++) {
+            actual = RandomIntegerUtils.generate(String.format("[randint{range=%s:%s}{even}]", min, max));
+            Assert.assertTrue(actual >= min && actual <= max, "|" + actual + "| is not in the specified range");
+            Assert.assertTrue(actual % 2 == 0, "|" + actual + "| is not an even number");
+        }
+    }
+
+    @Test
+    public void generate_withEvenModifier_shouldReturnRandomIntegerInDesiredRange() {
+        int actual = Integer.MIN_VALUE;
+        // perform multiple checks to generate range of random numbers to test due dynamic nature of the
+        // random numbers
+        for (int i = 0; i < 20; i++) {
+            actual = RandomIntegerUtils.generate("[randint{even}]");
+            Assert.assertTrue(actual % 2 == 0, "|" + actual + "| is not an even number");
+        }
+    }
+
+    @Test
+    public void generate_withEvenModifierAndInternalWhitespace_shouldReturnRandomIntegerInDesiredRange() {
+        int actual = Integer.MIN_VALUE;
+        // perform multiple checks to generate range of random numbers to test due dynamic nature of the
+        // random numbers
+        for (int i = 0; i < 20; i++) {
+            actual = RandomIntegerUtils.generate("[randint{ even }]");
+            Assert.assertTrue(actual % 2 == 0, "|" + actual + "| is not an even number");
+        }
+    }
+
+    @Test
+    public void generate_withEvenModifierMixedCase_shouldReturnRandomIntegerInDesiredRange() {
+        int actual = Integer.MIN_VALUE;
+        // perform multiple checks to generate range of random numbers to test due dynamic nature of the
+        // random numbers
+        for (int i = 0; i < 20; i++) {
+            actual = RandomIntegerUtils.generate("[randint{EvEn}]");
+            Assert.assertTrue(actual % 2 == 0, "|" + actual + "| is not an even number");
+        }
+    }
+
     @Test
     public void generate_withKeywordNoModifiers_shouldReturnAnyRandomInteger() {
         final int actual = RandomIntegerUtils.generate("[randint]");
@@ -64,6 +116,53 @@ public class RandomIntegerUtilsTest {
     }
 
     @Test
+    public void generate_withOddAndRangeModifiers_shouldReturnRandomIntegerInDesiredRange() {
+        int actual = Integer.MIN_VALUE;
+        final int min = -27;
+        final int max = 28;
+        // perform multiple checks to generate range of random numbers to test due dynamic nature of the
+        // random numbers
+        for (int i = 0; i < 20; i++) {
+            actual = RandomIntegerUtils.generate(String.format("[randint{range=%s:%s}{odd}]", min, max));
+            Assert.assertTrue(actual >= min && actual <= max, "|" + actual + "| is not in the specified range");
+            Assert.assertTrue(actual % 2 != 0, "|" + actual + "| is not an odd number");
+        }
+    }
+
+    @Test
+    public void generate_withOddModifier_shouldReturnRandomIntegerInDesiredRange() {
+        int actual = Integer.MIN_VALUE;
+        // perform multiple checks to generate range of random numbers to test due dynamic nature of the
+        // random numbers
+        for (int i = 0; i < 20; i++) {
+            actual = RandomIntegerUtils.generate("[randint{odd}]");
+            Assert.assertTrue(actual % 2 != 0, "|" + actual + "| is not an odd number");
+        }
+    }
+
+    @Test
+    public void generate_withOddModifierAndInternalWhitespace_shouldReturnRandomIntegerInDesiredRange() {
+        int actual = Integer.MIN_VALUE;
+        // perform multiple checks to generate range of random numbers to test due dynamic nature of the
+        // random numbers
+        for (int i = 0; i < 20; i++) {
+            actual = RandomIntegerUtils.generate("[randint{ odd }]");
+            Assert.assertTrue(actual % 2 != 0, "|" + actual + "| is not an odd number");
+        }
+    }
+
+    @Test
+    public void generate_withOddModifierMixedCase_shouldReturnRandomIntegerInDesiredRange() {
+        int actual = Integer.MIN_VALUE;
+        // perform multiple checks to generate range of random numbers to test due dynamic nature of the
+        // random numbers
+        for (int i = 0; i < 20; i++) {
+            actual = RandomIntegerUtils.generate("[randint{OdD}]");
+            Assert.assertTrue(actual % 2 != 0, "|" + actual + "| is not an odd number");
+        }
+    }
+
+    @Test
     public void generate_withValidRange_shouldReturnRandomIntegerInDesiredRange() {
         int actual = Integer.MIN_VALUE;
         final int min = -5;
@@ -98,19 +197,6 @@ public class RandomIntegerUtilsTest {
         // random numbers
         for (int i = 0; i < 20; i++) {
             actual = RandomIntegerUtils.generate(String.format("[randint{ range  =  %s  :  %s }]", min, max));
-            Assert.assertTrue(actual >= min && actual <= max, "|" + actual + "| is not in the specified range");
-        }
-    }
-
-    @Test
-    public void generate_withValidRangeModifierInternalWhitespace_shouldReturnRandomIntegerInDesiredRange() {
-        int actual = Integer.MIN_VALUE;
-        final int min = -5;
-        final int max = 6;
-        // perform multiple checks to generate range of random numbers to test due dynamic nature of the
-        // random numbers
-        for (int i = 0; i < 20; i++) {
-            actual = RandomIntegerUtils.generate(String.format("[  randint  {   range  =  %s  :  %s }]", min, max));
             Assert.assertTrue(actual >= min && actual <= max, "|" + actual + "| is not in the specified range");
         }
     }

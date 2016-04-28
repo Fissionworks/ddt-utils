@@ -15,6 +15,10 @@ import org.apache.commons.lang3.Validate;
  */
 public final class RandomIntegerUtils {
 
+    private static final Pattern EVEN_MODIFIER_PATTERN = Pattern.compile("\\{ *even *\\}", Pattern.CASE_INSENSITIVE);
+
+    private static final Pattern ODD_MODIFIER_PATTERN = Pattern.compile("\\{ *odd *\\}", Pattern.CASE_INSENSITIVE);
+
     private static final Pattern RANDINT_KEYWORD_PATTERN = Pattern.compile("^\\[ *randint.*\\]$",
             Pattern.CASE_INSENSITIVE);
 
@@ -50,9 +54,53 @@ public final class RandomIntegerUtils {
         return (int) (minValue + (long) (Math.random() * ((getRange(minValue, maxValue) + 1))));
     }
 
+    /**
+     * Creates a random integer based on any modifiers included in the passed in parameters string. The
+     * randint keyword and modifiers have built in tolerance for leading/trailing whitespace where practical,
+     * and are generally case insensitive. The format required to generate a random integer includes the
+     * following keyword and optional modifiers:
+     *
+     * <ul>
+     * <li>[randint] - The main keyword for generating a random integer which is the minimum required argument
+     * to the generate method and encloses the other modifiers. Passing in [randint] with no other modifiers
+     * generates a random integer between {@link Integer#MIN_VALUE} and {@link Integer#MAX_VALUE}</li>
+     * <li>{range=x:y} - Range modifier that specifies a range between which the generated random integers
+     * should fall with 'x' being the minimum desired value and 'y' being the maximum desired value. (example
+     * usage: [randint{range=-20:347}]</li>
+     * <li>{even} - Modifier that the generated random number should be even (example usage: [randint{even}];
+     * can be used with the {range} modifier, but cannot be used with the {odd} modifier.</li>
+     * <li>{odd} - Modifier that the generated random number should be odd (example usage: [randint{odd}]; can
+     * be used with the {range} modifier, but cannot be used with the {even} modifier.</li>
+     * </ul>
+     * Examples:
+     * <ul>
+     * <li>[randint{range=7-15}] - generates a random number between 7 and 15 (inclusive)</li>
+     * <li>[randint{range=7-15}{even}] - generates an even random number between 7 and 15 (inclusive if the
+     * range limit is even)</li>
+     * <li>[randint{range=1-18}{odd}] - generates an odd random number between 1 and 18 (inclusive if the
+     * range limit is odd)</li>
+     * </ul>
+     *
+     *
+     * @param parameterString
+     *            The parameter string with desired random integer modifier(s).
+     * @return A random integer based on the passed in parameter string.
+     * @since 1.0.0
+     */
     public static int generate(final String parameterString) {
         final String rangeString = getRangeString(parameterString);
         final String[] minMaxArray = rangeString.split(":");
+        final boolean isEven = EVEN_MODIFIER_PATTERN.matcher(parameterString).find();
+        final boolean isOdd = ODD_MODIFIER_PATTERN.matcher(parameterString).find();
+        Validate.isTrue(!(isEven && isOdd), "Cannot use both {even} and {odd} in same parameter string");
+        if (isEven) {
+            return RandomIntegerUtils.generateEven(Integer.parseInt(minMaxArray[0].trim()),
+                    Integer.parseInt(minMaxArray[1].trim()));
+        }
+        if (isOdd) {
+            return RandomIntegerUtils.generateOdd(Integer.parseInt(minMaxArray[0].trim()),
+                    Integer.parseInt(minMaxArray[1].trim()));
+        }
         return RandomIntegerUtils.generate(Integer.parseInt(minMaxArray[0].trim()),
                 Integer.parseInt(minMaxArray[1].trim()));
     }

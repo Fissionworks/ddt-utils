@@ -41,8 +41,8 @@
 
 	<repositories>
 		<repository>
-			<id>central</id>
-			<name>bintray</name>
+			<id>jcenter</id>
+			<name>JCenter</name>
 			<url>http://jcenter.bintray.com</url>
 		</repository>
 	</repositories>
@@ -65,7 +65,7 @@
 		<maven-project-info-reports-plugin.version>2.9</maven-project-info-reports-plugin.version>
 		<maven-site-plugin.version>3.5.1</maven-site-plugin.version>
 		<maven-surefire-report-plugin.version>2.19.1</maven-surefire-report-plugin.version>
-		<testng.version>6.9.11</testng.version>
+		<testng.version>6.9.10</testng.version>
 	</properties>
 
 	<dependencies>

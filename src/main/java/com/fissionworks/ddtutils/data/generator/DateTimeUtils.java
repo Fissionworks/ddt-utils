@@ -38,8 +38,7 @@ public final class DateTimeUtils {
 
     /**
      * Creates a {@link ZonedDateTime} based on the passed in parameter string, which should include any
-     * required modifiers. TheThe following should be understood, since they can impact the generated
-     * datetime:
+     * required modifiers. The following should be understood, since they can impact the generated datetime:
      *
      * <ul>
      * <li>Date and time adjustments are applied in the following order: years, months, weeks, days, hours,
