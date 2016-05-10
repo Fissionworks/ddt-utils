@@ -1,5 +1,8 @@
 language: java
 script: mvn test
+before_script:
+  - chmod a+x exitCodeFortyTwo.exe
+  - chmod a+x sleepTwoSeconds.exe
 after_success:
   - bash <(curl -s https://codecov.io/bash)
 jdk:
