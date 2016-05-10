@@ -4,20 +4,22 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URLDecoder;
 
+import org.apache.commons.lang3.StringUtils;
 import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 public class ProcessRunnerTest {
 
-    private static final String EXIT_CODE_FORTY_TWO_EXECUTABLE = "exitCodeFortyTwo.exe";
+    private String exitCodeFortyTwoExecutable;
 
-    private static final String SLEEP_TWO_SECONDS_EXECUTABLE = "sleepTwoSeconds.exe";
+    private String sleepTwoSecondsExecutable;
 
     @Test
     public void getLastExitCode_shouldUpdateAfterAsynchronousRunCompletion() throws IOException, InterruptedException {
-        final ProcessRunner runner = new ProcessRunner(new File(URLDecoder.decode(
-                this.getClass().getClassLoader().getResource(ProcessRunnerTest.SLEEP_TWO_SECONDS_EXECUTABLE).getPath(),
-                "utf-8")).getPath());
+        final ProcessRunner runner = new ProcessRunner(new File(URLDecoder
+                .decode(this.getClass().getClassLoader().getResource(sleepTwoSecondsExecutable).getPath(), "utf-8"))
+                        .getPath());
         runner.runAsynchronous();
         Assert.assertEquals(runner.getLastExitCode(), Integer.MIN_VALUE);
         Thread.sleep(2500L);
@@ -27,23 +29,17 @@ public class ProcessRunnerTest {
     @Test
     public void getLastExitCode_withProcessThatHasNeverRun_shouldReturnMinInteger()
             throws IOException, InterruptedException {
-        final ProcessRunner runner = new ProcessRunner(
-                new File(
-                        URLDecoder.decode(
-                                this.getClass().getClassLoader()
-                                        .getResource(ProcessRunnerTest.EXIT_CODE_FORTY_TWO_EXECUTABLE).getPath(),
-                                "utf-8")).getPath());
+        final ProcessRunner runner = new ProcessRunner(new File(URLDecoder
+                .decode(this.getClass().getClassLoader().getResource(exitCodeFortyTwoExecutable).getPath(), "utf-8"))
+                        .getPath());
         Assert.assertEquals(runner.getLastExitCode(), Integer.MIN_VALUE);
     }
 
     @Test
     public void getLastExitCode_withValidPath_shouldReturnLastExitCode() throws IOException, InterruptedException {
-        final ProcessRunner runner = new ProcessRunner(
-                new File(
-                        URLDecoder.decode(
-                                this.getClass().getClassLoader()
-                                        .getResource(ProcessRunnerTest.EXIT_CODE_FORTY_TWO_EXECUTABLE).getPath(),
-                                "utf-8")).getPath());
+        final ProcessRunner runner = new ProcessRunner(new File(URLDecoder
+                .decode(this.getClass().getClassLoader().getResource(exitCodeFortyTwoExecutable).getPath(), "utf-8"))
+                        .getPath());
         runner.runSynchronous();
         Assert.assertEquals(runner.getLastExitCode(), 42);
     }
@@ -60,41 +56,35 @@ public class ProcessRunnerTest {
 
     @Test
     public void isProcessRunning_withCompletedProcess_shouldReturnFalse() throws IOException, InterruptedException {
-        final ProcessRunner runner = new ProcessRunner(
-                new File(
-                        URLDecoder.decode(
-                                this.getClass().getClassLoader()
-                                        .getResource(ProcessRunnerTest.EXIT_CODE_FORTY_TWO_EXECUTABLE).getPath(),
-                                "utf-8")).getPath());
+        final ProcessRunner runner = new ProcessRunner(new File(URLDecoder
+                .decode(this.getClass().getClassLoader().getResource(exitCodeFortyTwoExecutable).getPath(), "utf-8"))
+                        .getPath());
         runner.runSynchronous();
         Assert.assertEquals(runner.isProcessRunning(), false);
     }
 
     @Test
     public void isProcessRunning_withNeverRunProcess_shouldReturnFalse() throws IOException, InterruptedException {
-        final ProcessRunner runner = new ProcessRunner(
-                new File(
-                        URLDecoder.decode(
-                                this.getClass().getClassLoader()
-                                        .getResource(ProcessRunnerTest.EXIT_CODE_FORTY_TWO_EXECUTABLE).getPath(),
-                                "utf-8")).getPath());
+        final ProcessRunner runner = new ProcessRunner(new File(URLDecoder
+                .decode(this.getClass().getClassLoader().getResource(exitCodeFortyTwoExecutable).getPath(), "utf-8"))
+                        .getPath());
         Assert.assertEquals(runner.isProcessRunning(), false);
     }
 
     @Test
     public void isProcessRunning_withRunningProcess_shouldReturnTrue() throws IOException, InterruptedException {
-        final ProcessRunner runner = new ProcessRunner(new File(URLDecoder.decode(
-                this.getClass().getClassLoader().getResource(ProcessRunnerTest.SLEEP_TWO_SECONDS_EXECUTABLE).getPath(),
-                "utf-8")).getPath());
+        final ProcessRunner runner = new ProcessRunner(new File(URLDecoder
+                .decode(this.getClass().getClassLoader().getResource(sleepTwoSecondsExecutable).getPath(), "utf-8"))
+                        .getPath());
         runner.runAsynchronous();
         Assert.assertEquals(runner.isProcessRunning(), true);
     }
 
     @Test
     public void runAsynchronous_withValidPath_shouldRunWithoutWait() throws IOException, InterruptedException {
-        final ProcessRunner runner = new ProcessRunner(new File(URLDecoder.decode(
-                this.getClass().getClassLoader().getResource(ProcessRunnerTest.SLEEP_TWO_SECONDS_EXECUTABLE).getPath(),
-                "utf-8")).getPath());
+        final ProcessRunner runner = new ProcessRunner(new File(URLDecoder
+                .decode(this.getClass().getClassLoader().getResource(sleepTwoSecondsExecutable).getPath(), "utf-8"))
+                        .getPath());
         final long startTime = System.currentTimeMillis();
         runner.runAsynchronous();
         final long timeAfterAsynchronousRun = System.currentTimeMillis();
@@ -104,13 +94,21 @@ public class ProcessRunnerTest {
 
     @Test
     public void runSynchronous_withValidPath_shouldReturnExitCode() throws IOException, InterruptedException {
-        final ProcessRunner runner = new ProcessRunner(
-                new File(
-                        URLDecoder.decode(
-                                this.getClass().getClassLoader()
-                                        .getResource(ProcessRunnerTest.EXIT_CODE_FORTY_TWO_EXECUTABLE).getPath(),
-                                "utf-8")).getPath());
+        final ProcessRunner runner = new ProcessRunner(new File(URLDecoder
+                .decode(this.getClass().getClassLoader().getResource(exitCodeFortyTwoExecutable).getPath(), "utf-8"))
+                        .getPath());
         Assert.assertEquals(runner.runSynchronous(), 42);
+    }
+
+    @BeforeClass
+    public void setup() {
+        if (StringUtils.containsIgnoreCase(System.getProperty("os.name"), "windows")) {
+            exitCodeFortyTwoExecutable = "exitCodeFortyTwo.exe";
+            sleepTwoSecondsExecutable = "sleepTwoSeconds.exe";
+        } else {
+            exitCodeFortyTwoExecutable = "exitCodeFortyTwo.sh";
+            sleepTwoSecondsExecutable = "sleepTwoSeconds.sh";
+        }
     }
 
 }
