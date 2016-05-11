@@ -1,2 +1,1 @@
-sleep 2
-exit 0
+sleep 2s
