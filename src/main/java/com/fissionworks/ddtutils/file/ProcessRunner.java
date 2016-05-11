@@ -108,7 +108,11 @@ public final class ProcessRunner {
      */
     public int runSynchronous(final long timeLimit, final TimeUnit timeUnit) throws IOException, InterruptedException {
         currentProcess = Runtime.getRuntime().exec(path);
+        System.out.println("wait: " + timeLimit + " " + timeUnit);
+        System.out.println("start: " + System.currentTimeMillis());
         final boolean finished = currentProcess.waitFor(timeLimit, timeUnit);
+        System.out.println("finish: " + System.currentTimeMillis());
+        System.out.println("isFinished: " + finished);
         if (!finished) {
             currentProcess.destroyForcibly();
             lastExitCode = 1;
