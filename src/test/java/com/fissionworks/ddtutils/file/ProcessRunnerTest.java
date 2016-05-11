@@ -82,6 +82,39 @@ public class ProcessRunnerTest {
     }
 
     @Test
+    public void killProcess_withCompletedProcess_shouldNotChangeExitCode() throws IOException, InterruptedException {
+        final ProcessRunner runner = new ProcessRunner(new File(URLDecoder
+                .decode(this.getClass().getClassLoader().getResource(exitCodeFortyTwoExecutable).getPath(), "utf-8"))
+                        .getPath());
+        runner.runSynchronous();
+        runner.killProcess();
+        Assert.assertEquals(runner.getLastExitCode(), 42);
+    }
+
+    @Test
+    public void killProcess_withNeverRunProcess_shouldNotChangeExitCode() throws IOException, InterruptedException {
+        final ProcessRunner runner = new ProcessRunner(new File(URLDecoder
+                .decode(this.getClass().getClassLoader().getResource(sleepTwoSecondsExecutable).getPath(), "utf-8"))
+                        .getPath());
+        runner.killProcess();
+        Assert.assertEquals(runner.getLastExitCode(), Integer.MIN_VALUE);
+    }
+
+    @Test
+    public void killProcess_withRunningProcess_shouldKillProcessAndSetExitCodeToOne()
+            throws IOException, InterruptedException {
+        final ProcessRunner runner = new ProcessRunner(new File(URLDecoder
+                .decode(this.getClass().getClassLoader().getResource(sleepTwoSecondsExecutable).getPath(), "utf-8"))
+                        .getPath());
+        final long start = System.currentTimeMillis();
+        runner.runAsynchronous();
+        runner.killProcess();
+        final long stop = System.currentTimeMillis();
+        Assert.assertEquals(runner.getLastExitCode(), 1);
+        Assert.assertTrue(stop - start < 2000l, "kill process did not stop process");
+    }
+
+    @Test
     public void runAsynchronous_withValidPath_shouldRunWithoutWait() throws IOException, InterruptedException {
         final ProcessRunner runner = new ProcessRunner(new File(URLDecoder
                 .decode(this.getClass().getClassLoader().getResource(sleepTwoSecondsExecutable).getPath(), "utf-8"))

@@ -59,6 +59,19 @@ public final class ProcessRunner {
     }
 
     /**
+     * Kills the process if currently running, and sets the last exit code to '1'. If the process is not
+     * running or has never been run, nothing occurs and the last exit code value is not changed.
+     *
+     * @since 1.0.0
+     */
+    public void killProcess() {
+        if (currentProcess != null && isProcessRunning()) {
+            currentProcess.destroyForcibly();
+            lastExitCode = 1;
+        }
+    }
+
+    /**
      * Starts the process, but does not wait for it to complete before returning.
      *
      * @throws IOException
@@ -108,11 +121,7 @@ public final class ProcessRunner {
      */
     public int runSynchronous(final long timeLimit, final TimeUnit timeUnit) throws IOException, InterruptedException {
         currentProcess = Runtime.getRuntime().exec(path);
-        System.out.println("wait: " + timeLimit + " " + timeUnit);
-        System.out.println("start: " + System.currentTimeMillis());
         final boolean finished = currentProcess.waitFor(timeLimit, timeUnit);
-        System.out.println("finish: " + System.currentTimeMillis());
-        System.out.println("isFinished: " + finished);
         if (!finished) {
             currentProcess.destroyForcibly();
             lastExitCode = 1;
