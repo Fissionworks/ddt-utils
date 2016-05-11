@@ -3,6 +3,7 @@ package com.fissionworks.ddtutils.file;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.testng.Assert;
@@ -90,6 +91,23 @@ public class ProcessRunnerTest {
         final long timeAfterAsynchronousRun = System.currentTimeMillis();
 
         Assert.assertTrue((timeAfterAsynchronousRun - startTime) < 2000L, "runAsynchronous did not run asynchronously");
+    }
+
+    @Test
+    public void runSynchronous_thatExceedsTimeLimit_shouldReturnExitCode() throws IOException, InterruptedException {
+        final ProcessRunner runner = new ProcessRunner(new File(URLDecoder
+                .decode(this.getClass().getClassLoader().getResource(sleepTwoSecondsExecutable).getPath(), "utf-8"))
+                        .getPath());
+        Assert.assertEquals(runner.runSynchronous(100, TimeUnit.MILLISECONDS), 1);
+    }
+
+    @Test
+    public void runSynchronous_thatFinishesBeforeTimeLimit_shouldReturnExitCode()
+            throws IOException, InterruptedException {
+        final ProcessRunner runner = new ProcessRunner(new File(URLDecoder
+                .decode(this.getClass().getClassLoader().getResource(exitCodeFortyTwoExecutable).getPath(), "utf-8"))
+                        .getPath());
+        Assert.assertEquals(runner.runSynchronous(2, TimeUnit.SECONDS), 42);
     }
 
     @Test
